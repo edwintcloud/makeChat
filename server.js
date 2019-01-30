@@ -8,6 +8,17 @@ const io = require('socket.io')(server);
 // socket.io connection
 io.on("connection", (socket) => {
   console.log("🔌 New user connected! 🔌");
+
+  // Listen for "new user" socket emits
+  socket.on('new user', (username) => {
+    console.log(`${username} has joined the chat! ✋`);
+  });
+
+  socket.on('new user', (username) => {
+    console.log(`✋ ${username} has joined the chat! ✋`);
+    //Send the username to all clients currently connected
+    io.emit("new user", username);
+  });
 })
 
 // set view engine to ejs

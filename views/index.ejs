@@ -7,8 +7,13 @@
   <title>MakeChat</title>
   <script src="socket.io/socket.io.js" async defer></script>
   <script src="/assets/js/scripts.js" async defer></script>
+  <link rel="stylesheet" href="/assets/css/flexboxgrid.min.css">
+  <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
-  <h1>Socket.io</h1>
+  <form class="usernameForm">
+    <input id="usernameInput" placeholder="Username"></input>
+    <button id="createUserBtn">Join Chat</button>
+  </form>
 </body>
 </html>
