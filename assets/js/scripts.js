@@ -5,6 +5,16 @@ window.onload = () => {
   // keep track of current user
   let currentUser;
 
+  socket.emit("get online users");
+
+  socket.on("get online users", onlineUsers => {
+    for (username in onlineUsers) {
+      document.querySelector(
+        ".usersOnline"
+      ).innerHTML += `<p class="userOnline">${username}</p>`;
+    }
+  });
+
   // create user onclick
   document.getElementById("createUserBtn").addEventListener("click", e => {
     e.preventDefault();
@@ -51,6 +61,14 @@ window.onload = () => {
       <p class="messageUser">${data.sender}: </p>
       <p class="messageText">${data.message}</p>
     </div>
-  `
+  `;
+  });
+
+  //Refresh the online user list
+  socket.on("user has left", onlineUsers => {
+    document.querySelector(".usersOnline").innerHTML = "";
+    for (username in onlineUsers) {
+      document.querySelector(".usersOnline").innerHTML += `<p>${username}</p>`;
+    }
   });
 };
