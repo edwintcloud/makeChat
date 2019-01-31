@@ -19,6 +19,13 @@ io.on("connection", (socket) => {
     //Send the username to all clients currently connected
     io.emit("new user", username);
   });
+
+  //Listen for new messages
+  socket.on('new message', (data) => {
+    // Send that data back to ALL clients
+    console.log(`🎤 ${data.sender}: ${data.message} 🎤`)
+    io.emit('new message', data);
+  })
 })
 
 // set view engine to ejs
