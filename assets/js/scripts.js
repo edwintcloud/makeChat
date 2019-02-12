@@ -1,18 +1,34 @@
+// connect to socket.io server
+const socket = io.connect();
+
+// keep track of current user
+let currentUser;
+
 window.onload = () => {
-  // connect to socket.io server
-  const socket = io.connect();
-
-  // keep track of current user
-  let currentUser;
-
   socket.emit("get online users");
 
-  socket.on("get online users", onlineUsers => {
-    for (username in onlineUsers) {
+  //Each user should be in the general channel by default.
+  socket.emit("user changed channel", "General");
+
+  socket.on("get online users", data => {
+    for (var username in data.users) {
       document.querySelector(
         ".usersOnline"
       ).innerHTML += `<p class="userOnline">${username}</p>`;
     }
+    // update channels to show currently created channels
+    for (var channel in data.channels) {
+      if (channel == "General") continue;
+      document.querySelector(
+        ".channels"
+      ).innerHTML += `<div class="channel">${channel}</div>`;
+    }
+  });
+
+  //Users can change the channel by clicking on its name.
+  $(document).on("click", ".channel", e => {
+    let newChannel = e.target.textContent;
+    socket.emit("user changed channel", newChannel);
   });
 
   // create user onclick
@@ -36,6 +52,9 @@ window.onload = () => {
     const channel = $(".channel-current").text();
     const element = document.getElementById("chatInput");
     const message = element.value;
+    console.log(channel);
+    console.log(message);
+    console.log(currentUser);
     if (message.length > 0) {
       //Emit to the server the new user
       socket.emit("new message", {
@@ -48,12 +67,11 @@ window.onload = () => {
   });
 
   //socket listeners
-  socket.on("new user", username => {
-    console.log(`✋ ${username} has joined the chat! ✋`);
+  socket.on("new user", data => {
     // add the new user to the .usersOnline div
     document.querySelector(
       ".usersOnline"
-    ).innerHTML += `<div class="userOnline">${username}</div>`;
+    ).innerHTML += `<div class="userOnline">${data}</div>`;
   });
 
   //Output the new message
@@ -77,16 +95,6 @@ window.onload = () => {
     }
   });
 
-  document
-    .getElementById("newChannelBtn")
-    .addEventListener("click", function() {
-      const newChannel = document.getElementById("newChannelInput").value;
-      if (newChannel.length > 0) {
-        socket.emit("new channel", newChannel);
-        document.getElementById("newChannelInput").value = "";
-      }
-    });
-
   socket.on("new channel", newChannel => {
     document.querySelector(
       ".channels"
@@ -106,9 +114,7 @@ window.onload = () => {
       }
     });
     document.querySelector(".channel-current").classList.remove("channel");
-    document
-      .querySelector(".message")
-      .parentNode.removeChild(document.querySelector(".message"));
+    document.querySelector(".messageContainer").innerHTML = "<h2>Messages</h2>";
     data.messages.forEach(message => {
       document.querySelector(".messageContainer").innerHTML += `
       <div class="message">
@@ -119,3 +125,11 @@ window.onload = () => {
     });
   });
 };
+
+function createChannel() {
+  const newChannel = document.getElementById("newChannelInput").value;
+  if (newChannel.length > 0) {
+    socket.emit("new channel", newChannel);
+    document.getElementById("newChannelInput").value = "";
+  }
+}

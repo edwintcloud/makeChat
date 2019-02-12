@@ -28,6 +28,7 @@ io.on("connection", socket => {
   //Listen for new messages
   socket.on("new message", data => {
     //Save the new message to the channel.
+    if (Object.keys(channels).length == 1 && data.channel != "General") return;
     channels[data.channel].push({ sender: data.sender, message: data.message });
     //Emit only to sockets that are in that channel room.
     io.to(data.channel).emit("new message", data);
@@ -35,7 +36,10 @@ io.on("connection", socket => {
 
   socket.on("get online users", () => {
     //Send over the onlineUsers
-    socket.emit("get online users", onlineUsers);
+    socket.emit("get online users", {
+      users: onlineUsers,
+      channels: channels
+    });
   });
 
   //This fires when a user closes out of the application
@@ -43,6 +47,15 @@ io.on("connection", socket => {
     //This deletes the user by using the username we saved to the socket
     delete onlineUsers[socket.username];
     io.emit("user has left", onlineUsers);
+  });
+
+  //Have the socket join the room of the channel
+  socket.on("user changed channel", newChannel => {
+    socket.join(newChannel);
+    socket.emit("user changed channel", {
+      channel: newChannel,
+      messages: channels[newChannel]
+    });
   });
 
   socket.on("new channel", newChannel => {

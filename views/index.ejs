@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>MakeChat</title>
-  <script src="socket.io/socket.io.js" async defer></script>
+  <script src="socket.io/socket.io.js"></script>
   <script src="/assets/js/scripts.js" async defer></script>
   <script src="/assets/js/stupid-jquery.js" async defer></script>
   <link rel="stylesheet" href="/assets/css/flexboxgrid.min.css">
@@ -22,7 +22,7 @@
       <h1 class="brand">Make Chat</h1>
       <div class="channels">
           <h2 class="channelsLabel">Channels</h2>
-          <div class="newChannelForm"><input id="newChannelInput" placeholder="New Channel" /><button id="newChannelBtn">Create</button></div>
+          <div class="newChannelForm"><input id="newChannelInput" placeholder="New Channel" /><button id="newChannelBtn" onclick="createChannel();">Create</button></div>
           <div class="channel-current">General</div>
       </div>
       <h2>Online Users</h2>
